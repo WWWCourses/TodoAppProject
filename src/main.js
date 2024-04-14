@@ -1,30 +1,50 @@
 const addTodo = function() {
-    // make id
-    const lastTodoId = todos[todos.length-1].id;
-
     const todoTitle = dom.todoTitleInput.value;
     const newTodo = {
-        'id': lastTodoId+1,
         'title': todoTitle,
         'completed': false
     }
 
-    // change state
-    todos.push(newTodo)
+    // chanve server state
+    // endpoint: POST,  http://localhost:3000/todos
+    fetch(BASE_URL, {
+        method:"POST",
+        headers: {
+            'Content-Type':'aplication/json'
+        },
+        body:JSON.stringify(newTodo)
+    })
+    .then(resp=>{
+        if(resp.ok){
+            return resp.json()
+        }
+    })
+    .then(data=>{
+        // change local state
+        todos.push(data)
 
-    // render UI
-    render(todos)
+        // render UI
+        render(todos)
+    })
+    .catch(err=>console.log(`ERROR: ${err}`))
 }
 
 const removeTodo = function(id) {
-    // change state
-    todos = todos.filter(todo=>todo.id*1!=id)
-    console.dir(todos);
-    // render UI
-    render(todos)
+    fetch(`${BASE_URL}/${id}`, {
+        method:"DELETE"
+    })
+    .then(resp=>{
+        if(resp.ok){
+            // change local state
+            todos = todos.filter(todo=>todo.id!==id)
+            // render UI
+            render(todos)
+        }
+    })
+    .catch(err=>console.log(`ERROR: ${err}`))
 }
 
-const render = function(todos) {
+const render = function() {
     dom.todoListUl.innerHTML='';
     todos.forEach(todo => {
         const liStr = `
@@ -40,6 +60,22 @@ const render = function(todos) {
     dom.todosCount.innerHTML = todos.length;
 }
 
+const getTodos = function(url) {
+    fetch(url)
+    .then(resp=>{
+        if(resp.ok){
+            return resp.json()
+        }else{
+            throw Error(`Error: ${resp.status}`)
+        }
+    })
+    .then(data=>{
+        todos = [...data]
+        render()
+    })
+    .catch(err=>console.error(`Error: ${err}`))
+}
+
 const dom = {
     todoTitleInput:document.querySelector('#todo-title'),
     todoAddBtn: document.querySelector('.todo-add-container>.btn'),
@@ -48,22 +84,14 @@ const dom = {
 }
 
 
+const BASE_URL = 'http://localhost:3000/todos';
 // initialize state
-let todos = [
-    {
-        'id':1,
-        'title':'Learn JS',
-        'completed': true
-    },
-    {
-        'id':2,
-        'title':'Learn React',
-        'completed': false
-    },
-]
+let todos;
+
+getTodos(BASE_URL)
 
 window.addEventListener("load", (event) => {
-    render(todos)
+    // render(todos)
 });
 
 dom.todoAddBtn.addEventListener('click', addTodo )
