@@ -1,5 +1,18 @@
 {
-  "devDependencies": {
+  "name": "todoappproject",
+  "version": "1.0.0",
+  "description": "This is my JS-Advanced course project",
+  "main": "index.js",
+  "scripts": {
+    "json_server": "npx json-server -w db.json",
+    "tsc": "tsc -w",
+    "start": "npx concurrently \"npx json-server -w db.json\" \"npm run tsc\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2",
     "json-server": "^1.0.0-alpha.23"
   }
 }
