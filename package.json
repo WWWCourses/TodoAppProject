@@ -6,7 +6,7 @@
   "scripts": {
     "json_server": "npx json-server -w db.json",
     "tsc": "tsc -w",
-    "start": "npx concurrently \"npx json-server -w db.json\" \"npm run tsc\""
+    "start": "npx concurrently \"npm:json_server\" \"npm:tsc\""
   },
   "keywords": [],
   "author": "",
